@@ -11,6 +11,8 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
 
+  // console.log("this is", new URLSearchParams(searchParams).get("page"));
+
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams);
     params.set("page", pageNumber.toString());
@@ -18,11 +20,9 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
   };
 
   const allPages = generatePagination(currentPage, totalPages);
-
+  console.log("this is all", allPages);
   return (
     <>
-      {/*  NOTE: Uncomment this code in Chapter 10 */}
-
       <div className="inline-flex">
         <PaginationArrow
           direction="left"
