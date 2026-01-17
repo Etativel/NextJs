@@ -56,10 +56,8 @@ export async function updateInvoice(id: string, formData: FormData) {
 }
 
 export async function deleteInvoice(id: string) {
-  console.log(id);
-
   await sql`
-  DELETE INVOICES WHERE ID = ${id}
+  DELETE FROM INVOICES WHERE id = ${id}
   `;
 
   revalidatePath("/dashboard/invoices");

@@ -19,7 +19,6 @@ export default function Search({ placeholder }: { placeholder: string }) {
     }
 
     replace(`${pathname}?${params.toString()}`);
-    console.log(pathname);
   }, 300);
 
   // function handleSearch(term: string) {
