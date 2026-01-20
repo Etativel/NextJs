@@ -8,6 +8,11 @@ import { error } from "console";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
+export type State = {
+  message?: string | null;
+  error?: unknown;
+};
+
 const FormSchema = z.object({
   id: z.string(),
   customerId: z.string(),
@@ -19,7 +24,7 @@ const FormSchema = z.object({
 const CreateInvoice = FormSchema.omit({ id: true, data: true });
 const UpdateInvoice = FormSchema.omit({ id: true, data: true });
 
-export async function createInvoice(formData: FormData) {
+export async function createInvoice(prevState: State, formData: FormData) {
   // const { customerId, amount, status } = CreateInvoice.parse({
   //   customerId: formData.get("customerId"),
   //   amount: formData.get("amount"),
@@ -59,7 +64,12 @@ export async function createInvoice(formData: FormData) {
   redirect("/dashboard/invoices");
 }
 
-export async function updateInvoice(id: string, formData: FormData) {
+export async function updateInvoice(
+  id: string,
+  prevState: State,
+
+  formData: FormData,
+) {
   // const { customerId, amount, status } = UpdateInvoice.parse({
   //   customerId: formData.get("customerId"),
   //   amount: formData.get("amount"),
