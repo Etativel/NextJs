@@ -9,15 +9,25 @@ import { error } from "console";
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
 export type State = {
+  errors?: {
+    customerId?: string[];
+    amount?: string[];
+    status?: string[];
+  };
   message?: string | null;
-  error?: unknown;
 };
 
 const FormSchema = z.object({
   id: z.string(),
-  customerId: z.string(),
-  amount: z.coerce.number(),
-  status: z.enum(["pending", "paid"]),
+  customerId: z.string({
+    invalid_type_error: "Please select a customer",
+  }),
+  amount: z.coerce.number().gt(0, {
+    message: "Please enter an amount greater than $0.",
+  }),
+  status: z.enum(["pending", "paid"], {
+    invalid_type_error: "Please select an invoice status",
+  }),
   data: z.string(),
 });
 
@@ -38,7 +48,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
 
   if (!validatedFields.success) {
     return {
-      error: validatedFields.error.flatten().fieldErrors,
+      errors: validatedFields.error.flatten().fieldErrors,
       message: "Missing fields. Failed to Create Invoice",
     };
   }
@@ -50,14 +60,14 @@ export async function createInvoice(prevState: State, formData: FormData) {
 
   try {
     await sql`
-  INSERT INTO INVOICES (customer_id, amount, status, date)
-  VALUES (${customerId},${amountInCents}, ${status},  ${date})
+      INSERT INTO INVOICES (customer_id, amount, status, date)
+      VALUES (${customerId},${amountInCents}, ${status},  ${date})
   `;
   } catch (error) {
     console.log(error);
     return {
       message: "Failed to Create Invoice",
-      error: error,
+      // errors: error,
     };
   }
   revalidatePath("/dashboard/invoices");
@@ -67,7 +77,6 @@ export async function createInvoice(prevState: State, formData: FormData) {
 export async function updateInvoice(
   id: string,
   prevState: State,
-
   formData: FormData,
 ) {
   // const { customerId, amount, status } = UpdateInvoice.parse({
@@ -84,7 +93,7 @@ export async function updateInvoice(
 
   if (!validatedFields.success) {
     return {
-      error: validatedFields.error.flatten().fieldErrors,
+      errors: validatedFields.error.flatten().fieldErrors,
       message: "Missing fields. Failed to Create Invoice",
     };
   }
@@ -105,7 +114,7 @@ export async function updateInvoice(
     console.log(error);
     return {
       message: "Database Error: Failed to Update Invoice",
-      error: error,
+      // errors: error,
     };
   }
 
