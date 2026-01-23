@@ -7,6 +7,10 @@ const development = () => {
   console.log("development");
 };
 
+const features = () => {
+  console.log("feature");
+};
+
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const id = params.id;
@@ -18,6 +22,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 
   if (!invoice) {
     development();
+    features();
     notFound();
   }
 
