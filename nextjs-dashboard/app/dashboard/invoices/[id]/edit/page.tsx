@@ -3,6 +3,10 @@ import Breadcrumbs from "@/app/ui/invoices/breadcrumbs";
 import { fetchCustomers, fetchInvoiceById } from "@/app/lib/data";
 import { notFound } from "next/navigation";
 
+const development = () => {
+  console.log("development");
+};
+
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const id = params.id;
@@ -13,6 +17,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
   ]);
 
   if (!invoice) {
+    development();
     notFound();
   }
 
